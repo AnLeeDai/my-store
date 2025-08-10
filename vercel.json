@@ -1,0 +1,15 @@
+{
+  "buildCommand": "npm run build",
+  "outputDirectory": ".next",
+  "installCommand": "npm install",
+  "devCommand": "npm run dev",
+  "env": {
+    "NODE_ENV": "production"
+  },
+  "build": {
+    "env": {
+      "TURSO_DATABASE_URL": "@turso-database-url",
+      "TURSO_AUTH_TOKEN": "@turso-auth-token"
+    }
+  }
+}
