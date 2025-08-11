@@ -1,6 +1,6 @@
 {
-  "name": "next-app-template",
-  "version": "0.0.1",
+  "name": "techstore",
+  "version": "1.0.0",
   "type": "module",
   "private": true,
   "scripts": {
@@ -9,10 +9,7 @@
     "start": "next start",
     "lint": "eslint --fix",
     "db:seed": "tsx prisma/seed.ts",
-    "db:reset": "npx prisma db push --force-reset && npm run db:seed",
     "db:studio": "npx prisma studio",
-    "db:generate": "npx prisma generate",
-    "db:deploy": "npx prisma db push",
     "postinstall": "prisma generate"
   },
   "dependencies": {
@@ -79,5 +76,8 @@
     "tailwindcss": "4.1.11",
     "tsx": "^4.20.3",
     "typescript": "5.6.3"
+  },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
   }
 }

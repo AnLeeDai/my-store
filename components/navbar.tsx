@@ -22,15 +22,11 @@ import {
 import { link as linkStyles } from "@heroui/theme";
 import NextLink from "next/link";
 import clsx from "clsx";
-import { useState } from "react";
 
 import { siteConfig } from "@/config/site";
 import { ThemeSwitch } from "@/components/theme-switch";
 import {
-  TwitterIcon,
   GithubIcon,
-  DiscordIcon,
-  HeartFilledIcon,
   SearchIcon,
   Logo,
 } from "@/components/icons";
@@ -83,7 +79,7 @@ export const Navbar = () => {
                 <NextLink
                   className={clsx(
                     linkStyles({ color: "foreground" }),
-                    "data-[active=true]:text-primary data-[active=true]:font-medium"
+                    "data-[active=true]:text-primary data-[active=true]:font-medium",
                   )}
                   color="foreground"
                   href={item.href}
@@ -100,20 +96,6 @@ export const Navbar = () => {
           justify="end"
         >
           <NavbarItem className="hidden sm:flex gap-2">
-            <Link
-              isExternal
-              aria-label="Twitter"
-              href={siteConfig.links.twitter}
-            >
-              <TwitterIcon className="text-default-500" />
-            </Link>
-            <Link
-              isExternal
-              aria-label="Discord"
-              href={siteConfig.links.discord}
-            >
-              <DiscordIcon className="text-default-500" />
-            </Link>
             <Link isExternal aria-label="Github" href={siteConfig.links.github}>
               <GithubIcon className="text-default-500" />
             </Link>
@@ -164,18 +146,21 @@ export const Navbar = () => {
                     as="button"
                     className="transition-transform"
                     color="default"
-                    size="sm"
                     icon={<AvatarIcon />}
+                    size="sm"
                   />
                 </DropdownTrigger>
                 <DropdownMenu aria-label="Auth Actions" variant="flat">
                   <DropdownItem key="login">
-                    <NextLink href="/auth?tab=login" className="block w-full">
+                    <NextLink className="block w-full" href="/auth?tab=login">
                       Đăng nhập
                     </NextLink>
                   </DropdownItem>
                   <DropdownItem key="register">
-                    <NextLink href="/auth?tab=register" className="block w-full">
+                    <NextLink
+                      className="block w-full"
+                      href="/auth?tab=register"
+                    >
                       Đăng ký
                     </NextLink>
                   </DropdownItem>

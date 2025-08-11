@@ -1,25 +1,23 @@
-import { NextResponse } from 'next/server'
+import { NextResponse } from "next/server";
 
 export async function POST() {
   try {
     const response = NextResponse.json({
-      message: 'Đăng xuất thành công',
-    })
+      message: "Đăng xuất thành công",
+    });
 
     // Xóa auth token cookie
-    response.cookies.set('auth-token', '', {
+    response.cookies.set("auth-token", "", {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
       expires: new Date(0),
-    })
+    });
 
-    return response
+    return response;
   } catch (error) {
-    console.error('Logout error:', error)
-    return NextResponse.json(
-      { error: 'Lỗi server nội bộ' },
-      { status: 500 }
-    )
+    console.error("Logout error:", error);
+
+    return NextResponse.json({ error: "Lỗi server nội bộ" }, { status: 500 });
   }
 }

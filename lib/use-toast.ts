@@ -1,48 +1,48 @@
-'use client'
+"use client";
 
-import { addToast } from '@heroui/toast'
+import { addToast } from "@heroui/toast";
 
 export const useToast = () => {
   const showSuccess = (message: string) => {
     addToast({
-      title: 'Thành công',
+      title: "Thành công",
       description: message,
-      color: 'success',
-      variant: 'flat',
-    })
-  }
+      color: "success",
+      variant: "flat",
+    });
+  };
 
   const showError = (message: string) => {
     addToast({
-      title: 'Lỗi',
+      title: "Lỗi",
       description: message,
-      color: 'danger',
-      variant: 'flat',
-    })
-  }
+      color: "danger",
+      variant: "flat",
+    });
+  };
 
   const showInfo = (message: string) => {
     addToast({
-      title: 'Thông báo',
+      title: "Thông báo",
       description: message,
-      color: 'primary',
-      variant: 'flat',
-    })
-  }
+      color: "primary",
+      variant: "flat",
+    });
+  };
 
   const showWarning = (message: string) => {
     addToast({
-      title: 'Cảnh báo',
+      title: "Cảnh báo",
       description: message,
-      color: 'warning',
-      variant: 'flat',
-    })
-  }
+      color: "warning",
+      variant: "flat",
+    });
+  };
 
   return {
     success: showSuccess,
     error: showError,
     info: showInfo,
     warning: showWarning,
-  }
-}
+  };
+};

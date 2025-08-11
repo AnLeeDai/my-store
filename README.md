@@ -1,23 +1,25 @@
-# My Store - E-commerce Platform
+# TechStore - E-commerce Platform
 
-A modern fullstack e-commerce application built with Next.js, Prisma, and SQLite based on the pro1014_schema.
+A modern fullstack e-commerce application built with Next.js, Prisma, and PostgreSQL.
 
 ## Features
 
 - 🛍️ Product catalog with categories
 - 🛒 Shopping cart functionality
-- 👥 User management with roles (admin/user)
-- 📦 Order management system
+- 👥 User authentication with JWT
+- 🔐 Role-based access control (admin/user)
 - 🎨 Modern UI with HeroUI components
-- 🗄️ SQLite database with Prisma ORM
-- 🚀 Fast development with Turbopack
+- 🗄️ PostgreSQL database with Prisma ORM
+- ⚡ Fast development with Turbopack
+- 🚀 Deploy ready for Vercel
 
 ## Tech Stack
 
 - **Frontend**: Next.js 15, React 18, TypeScript
 - **Backend**: Next.js API Routes
-- **Database**: SQLite with Prisma ORM
+- **Database**: PostgreSQL with Prisma ORM & Prisma Accelerate
 - **UI**: HeroUI (v2), Tailwind CSS
+- **Auth**: JWT with HTTP-only cookies
 - **Dev Tools**: ESLint, Prettier, tsx
 
 ## Database Schema
@@ -37,6 +39,7 @@ The application includes the following main entities based on the pro1014_schema
 ### Prerequisites
 
 - Node.js 18+ and npm/yarn
+- PostgreSQL database (or Vercel Postgres)
 - Git
 
 ### Installation
@@ -46,30 +49,35 @@ The application includes the following main entities based on the pro1014_schema
    yarn install
    ```
 
-2. **Set up the database**:
+2. **Set up environment variables**:
    ```bash
-   # Create and sync the database
+   cp .env.example .env
+   # Edit .env with your PostgreSQL credentials
+   ```
+
+3. **Set up the database**:
+   ```bash
+   # Push schema to database
    npx prisma db push
    
    # Seed with sample data
    npm run db:seed
    ```
 
-3. **Start the development server**:
+4. **Start the development server**:
    ```bash
    npm run dev
    ```
 
-4. **Open your browser** and navigate to `http://localhost:3000`
+5. **Open your browser** and navigate to `http://localhost:3000`
 
 ## Database Management
 
 ### Available Scripts
 
 - `npm run db:seed` - Seed database with sample data
-- `npm run db:reset` - Reset database and reseed
 - `npm run db:studio` - Open Prisma Studio (database GUI)
-- `npm run db:generate` - Generate Prisma client
+- `npx prisma generate` - Generate Prisma client
 
 ### Prisma Studio
 

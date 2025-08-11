@@ -6,8 +6,9 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("PRISMA_DATABASE_URL") // uses Prisma Accelerate
+  directUrl = env("POSTGRES_URL") // uses direct connection
 }
 
 // Categories table
