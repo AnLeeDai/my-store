@@ -1,67 +1,34 @@
-# Deploy TechStore to Vercel với Turso Database
+# Deploy TechStore to Vercel với SQLite Database
 
-## Hướng dẫn Setup Production Database
+## Hướng dẫn Deploy
 
-### 1. Chuẩn bị Turso Database
-
-1. Tạo database trên Turso:
-```bash
-turso db create my-store-production
-```
-
-2. Lấy database URL:
-```bash
-turso db show my-store-production --url
-```
-
-3. Tạo auth token:
-```bash
-turso auth token
-```
-
-### 2. Deploy lên Vercel
+### 1. Deploy lên Vercel
 
 1. Connect project với Vercel:
 ```bash
 npx vercel
 ```
 
-2. Thêm environment variables trên Vercel dashboard:
-```
-TURSO_DATABASE_URL=libsql://your-database-url.turso.io
-TURSO_AUTH_TOKEN=your_auth_token_here
-NODE_ENV=production
-SETUP_SECRET=your_secure_secret_here
-```
+2. Vercel sẽ tự động detect Next.js project và build
 
-### 3. Setup Production Database
+### 2. Database Setup
 
-#### Option 1: Sử dụng npm scripts (local)
+Ứng dụng sử dụng SQLite cho cả development và production:
+- File database: `dev.db`
+- Prisma sẽ tự động tạo database khi chạy migrations
+
+### 3. Setup Database sau khi deploy
+
 ```bash
-# Migration và seeding cùng lúc
-npm run turso:setup
+# Local development
+npm run db:reset
 
-# Hoặc từng bước
-npm run turso:migrate
-npm run turso:seed
+# Or step by step
+npx prisma db push
+npm run db:seed
 ```
 
-#### Option 2: Sử dụng API endpoint (remote)
-Sau khi deploy, gọi API endpoint:
-```bash
-curl -X POST https://your-app.vercel.app/api/setup-db \
-  -H "Content-Type: application/json" \
-  -d '{"secret": "your_setup_secret"}'
-```
-
-### 4. Kiểm tra Database
-
-Sử dụng API test endpoint:
-```bash
-curl https://your-app.vercel.app/api/test-turso
-```
-
-### 5. Cấu trúc Database
+### 4. Cấu trúc Database
 
 Database sẽ được tạo với:
 - **categories**: Danh mục sản phẩm (Laptop, Smartphone, Tablet, Accessories)
@@ -71,19 +38,33 @@ Database sẽ được tạo với:
 - **products**: 12 sản phẩm công nghệ với mô tả tiếng Việt
 - **orders**, **cart**, **order_items**: Bảng cho shopping cart và orders
 
-### 6. Local Development vs Production
+### 5. Environment Variables
 
-- **Local**: Sử dụng SQLite file (`dev.db`)
-- **Production**: Sử dụng Turso database qua `@libsql/client`
-- Hệ thống tự động detect environment và chọn database phù hợp
+Chỉ cần thiết lập:
+```
+DATABASE_URL=file:./dev.db
+NODE_ENV=production
+```
+
+### 6. Commands hữu ích
+
+```bash
+# Development
+npm run dev
+npm run db:studio  # Xem database
+npm run db:reset   # Reset và seed lại database
+
+# Build
+npm run build
+npm start
+```
 
 ### 7. Troubleshooting
 
-Nếu gặp lỗi khi setup database:
-1. Kiểm tra Turso credentials
-2. Verify network connection đến Turso
-3. Check logs qua Vercel dashboard
-4. Thử setup lại bằng API endpoint với correct secret
+Nếu gặp lỗi database:
+1. Xóa file `dev.db` 
+2. Chạy `npm run db:reset`
+3. Check Prisma schema trong `prisma/schema.prisma`
 
 ## Hướng dẫn Deploy theo Vercel Guide (Backup Reference)
 

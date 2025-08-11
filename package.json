@@ -13,10 +13,6 @@
     "db:studio": "npx prisma studio",
     "db:generate": "npx prisma generate",
     "db:deploy": "npx prisma db push",
-    "turso:migrate": "tsx scripts/migrate-turso.ts",
-    "turso:seed": "tsx scripts/seed-turso.ts", 
-    "turso:setup": "tsx scripts/setup-production-db.ts",
-    "prod:setup": "npm run turso:setup",
     "postinstall": "prisma generate"
   },
   "dependencies": {
@@ -38,7 +34,6 @@
     "@heroui/tabs": "^2.2.21",
     "@heroui/theme": "2.4.20",
     "@heroui/toast": "^2.0.14",
-    "@libsql/client": "^0.15.10",
     "@prisma/client": "^6.13.0",
     "@react-aria/ssr": "3.9.10",
     "@react-aria/visually-hidden": "3.8.26",
