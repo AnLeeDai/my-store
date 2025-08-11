@@ -578,5 +578,6 @@ async function main() {
   }
 }
 
-// Run the main function if this is the main module
-main();
+if (require.main === module) {
+  main();
+}

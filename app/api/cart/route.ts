@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { CartStatus } from "@prisma/client";
 
 import { prisma } from "@/lib/prisma";
 
@@ -18,7 +19,7 @@ export async function GET(request: NextRequest) {
     let cart = await prisma.cart.findFirst({
       where: {
         userId: parseInt(userId),
-        status: "PENDING",
+        status: CartStatus.ACTIVE,
       },
       include: {
         items: {
@@ -56,9 +57,7 @@ export async function GET(request: NextRequest) {
     }
 
     return NextResponse.json(cart);
-  } catch (error) {
-    console.error("Error fetching cart:", error);
-
+  } catch {
     return NextResponse.json(
       { error: "Failed to fetch cart" },
       { status: 500 },
@@ -83,7 +82,7 @@ export async function POST(request: NextRequest) {
     let cart = await prisma.cart.findFirst({
       where: {
         userId: parseInt(userId),
-        status: "PENDING",
+        status: CartStatus.ACTIVE,
       },
     });
 
@@ -120,7 +119,7 @@ export async function POST(request: NextRequest) {
         where: { id: existingItem.id },
         data: {
           quantity: existingItem.quantity + parseInt(quantity),
-          price: product.price,
+          price: product.basePrice,
         },
         include: {
           product: {
@@ -138,7 +137,7 @@ export async function POST(request: NextRequest) {
           cartId: cart.id,
           productId: parseInt(productId),
           quantity: parseInt(quantity),
-          price: product.price,
+          price: product.basePrice,
         },
         include: {
           product: {
@@ -152,9 +151,7 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json(cartItem, { status: 201 });
-  } catch (error) {
-    console.error("Error adding to cart:", error);
-
+  } catch {
     return NextResponse.json(
       { error: "Failed to add to cart" },
       { status: 500 },

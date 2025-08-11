@@ -24,7 +24,7 @@ export async function GET(request: NextRequest) {
       where.OR = [
         { name: { contains: search, mode: "insensitive" } },
         { shortDescription: { contains: search, mode: "insensitive" } },
-        { brand: { contains: search, mode: "insensitive" } },
+        { brand: { name: { contains: search, mode: "insensitive" } } },
       ];
     }
 
@@ -33,6 +33,7 @@ export async function GET(request: NextRequest) {
         where,
         include: {
           category: true,
+          brand: true,
           images: true,
         },
         orderBy: { createdAt: "desc" },
@@ -51,9 +52,7 @@ export async function GET(request: NextRequest) {
         totalPages: Math.ceil(total / limit),
       },
     });
-  } catch (error) {
-    console.error("Error fetching products:", error);
-
+  } catch {
     return NextResponse.json(
       { error: "Failed to fetch products" },
       { status: 500 },
@@ -64,19 +63,17 @@ export async function GET(request: NextRequest) {
 // POST create new product
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json();
     const {
       name,
       price,
       thumbnail,
       shortDescription,
       fullDescription,
-      extraInfo,
-      inStock,
-      brand,
       categoryId,
+      brand,
+      inStock,
       images,
-    } = body;
+    } = await request.json();
 
     if (!name || !price) {
       return NextResponse.json(
@@ -88,13 +85,16 @@ export async function POST(request: NextRequest) {
     const product = await prisma.product.create({
       data: {
         name,
-        price: parseFloat(price),
+        slug: name
+          .toLowerCase()
+          .replace(/\s+/g, "-")
+          .replace(/[^\w-]/g, ""),
+        basePrice: parseFloat(price),
         thumbnail,
         shortDescription,
         fullDescription,
-        extraInfo,
-        inStock: parseInt(inStock) || 0,
-        brand,
+        totalStock: parseInt(inStock) || 0,
+        brandId: brand ? parseInt(brand) : null,
         categoryId: categoryId ? parseInt(categoryId) : null,
         images: images
           ? {
@@ -109,9 +109,7 @@ export async function POST(request: NextRequest) {
     });
 
     return NextResponse.json(product, { status: 201 });
-  } catch (error) {
-    console.error("Error creating product:", error);
-
+  } catch {
     return NextResponse.json(
       { error: "Failed to create product" },
       { status: 500 },

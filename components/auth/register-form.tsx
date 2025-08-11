@@ -142,8 +142,7 @@ export default function RegisterForm({
         );
         onError(result.error || "Đăng ký tài khoản thất bại");
       }
-    } catch (error) {
-      console.error("Registration error:", error);
+    } catch {
       toast.error("Đã xảy ra lỗi kết nối. Vui lòng kiểm tra mạng và thử lại.");
       onError("Lỗi kết nối máy chủ");
     } finally {

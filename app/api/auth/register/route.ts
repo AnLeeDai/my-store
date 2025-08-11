@@ -82,9 +82,7 @@ export async function POST(request: NextRequest) {
       },
       { status: 201 },
     );
-  } catch (error) {
-    console.error("Register error:", error);
-
+  } catch {
     return NextResponse.json({ error: "Lỗi server nội bộ" }, { status: 500 });
   }
 }

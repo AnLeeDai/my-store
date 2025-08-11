@@ -15,9 +15,7 @@ export async function POST() {
     });
 
     return response;
-  } catch (error) {
-    console.error("Logout error:", error);
-
+  } catch {
     return NextResponse.json({ error: "Lỗi server nội bộ" }, { status: 500 });
   }
 }

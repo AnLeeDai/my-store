@@ -66,8 +66,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         // Token không hợp lệ, xóa cookie
         Cookies.remove("auth-token");
       }
-    } catch (error) {
-      console.error("Check auth error:", error);
+    } catch {
       Cookies.remove("auth-token");
     } finally {
       setLoading(false);
@@ -94,9 +93,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       } else {
         return { success: false, error: data.error };
       }
-    } catch (error) {
-      console.error("Login error:", error);
-
+    } catch {
       return { success: false, error: "Lỗi kết nối" };
     }
   };
@@ -118,9 +115,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       } else {
         return { success: false, error: data.error };
       }
-    } catch (error) {
-      console.error("Register error:", error);
-
+    } catch {
       return { success: false, error: "Lỗi kết nối" };
     }
   };
@@ -131,8 +126,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setUser(null);
       Cookies.remove("auth-token");
       toast.success("Đăng xuất thành công!");
-    } catch (error) {
-      console.error("Logout error:", error);
+    } catch {
       // Vẫn logout local state ngay cả khi API lỗi
       setUser(null);
       Cookies.remove("auth-token");

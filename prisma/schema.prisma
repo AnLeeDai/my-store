@@ -11,73 +11,150 @@ datasource db {
   directUrl = env("POSTGRES_URL") // uses direct connection
 }
 
-// Categories table
+// Categories table - Các danh mục sản phẩm điện tử
 model Category {
   id          Int       @id @default(autoincrement()) @map("category_id")
-  name        String    @map("category_name")
-  description String?
+  name        String    @map("category_name") @db.VarChar(100)
+  slug        String    @unique @db.VarChar(100)
+  description String?   @db.Text
+  imageUrl    String?   @map("image_url") @db.VarChar(255)
+  isActive    Boolean   @default(true) @map("is_active")
+  sortOrder   Int       @default(0) @map("sort_order")
   createdAt   DateTime  @default(now()) @map("created_at")
   updatedAt   DateTime  @updatedAt @map("updated_at")
-  isActive    Boolean   @default(true) @map("is_active")
 
   // Relations
-  products    Product[]
+  products Product[]
 
   @@map("categories")
 }
 
-// Users table
-model User {
-  id                Int       @id @default(autoincrement()) @map("user_id")
-  username          String    @unique
-  password          String
-  fullName          String?   @map("full_name")
-  email             String?
-  phoneNumber       String?   @map("phone_number")
-  address           String?
-  avatarUrl         String?   @map("avatar_url")
-  passwordChangedAt DateTime? @map("password_changed_at")
-  createdAt         DateTime  @default(now()) @map("created_at")
-  role              Role      @default(USER)
-  isActive          Boolean   @default(true) @map("is_active")
+// Brands table - Thương hiệu điện tử
+model Brand {
+  id          Int      @id @default(autoincrement()) @map("brand_id")
+  name        String   @unique @db.VarChar(100)
+  slug        String   @unique @db.VarChar(100)
+  logoUrl     String?  @map("logo_url") @db.VarChar(255)
+  description String?  @db.Text
+  website     String?  @db.VarChar(255)
+  isActive    Boolean  @default(true) @map("is_active")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
 
   // Relations
-  carts   Cart[]
-  orders  Order[]
+  products Product[]
+
+  @@map("brands")
+}
+
+// Users table - Người dùng và admin
+model User {
+  id                Int       @id @default(autoincrement()) @map("user_id")
+  username          String    @unique @db.VarChar(50)
+  email             String    @unique @db.VarChar(100)
+  password          String    @db.VarChar(255)
+  fullName          String?   @map("full_name") @db.VarChar(100)
+  phoneNumber       String?   @map("phone_number") @db.VarChar(20)
+  address           String?   @db.Text
+  avatarUrl         String?   @map("avatar_url") @db.VarChar(255)
+  dateOfBirth       DateTime? @map("date_of_birth") @db.Date
+  gender            Gender?
+  passwordChangedAt DateTime? @map("password_changed_at")
+  emailVerifiedAt   DateTime? @map("email_verified_at")
+  lastLoginAt       DateTime? @map("last_login_at")
+  role              Role      @default(USER)
+  isActive          Boolean   @default(true) @map("is_active")
+  createdAt         DateTime  @default(now()) @map("created_at")
+  updatedAt         DateTime  @updatedAt @map("updated_at")
+
+  // Relations
+  carts            Cart[]
+  orders           Order[]
+  reviews          Review[]
+  wishlistItems    WishlistItem[]
+  passwordRequests PasswordRequest[]
 
   @@map("users")
 }
 
-// Products table
+// Products table - Sản phẩm điện tử với variants
 model Product {
-  id               Int      @id @default(autoincrement())
-  name             String   @map("product_name")
-  price            Float    @default(0.00)
-  thumbnail        String?
-  shortDescription String?  @map("short_description")
-  fullDescription  String?  @map("full_description")
-  extraInfo        String?  @map("extra_info")
-  inStock          Int      @default(0) @map("in_stock")
-  brand            String?
-  categoryId       Int?     @map("category_id")
-  createdAt        DateTime @default(now()) @map("created_at")
-  updatedAt        DateTime @updatedAt @map("updated_at")
-  isActive         Boolean  @default(true) @map("is_active")
+  id               Int       @id @default(autoincrement()) @map("product_id")
+  name             String    @map("product_name") @db.VarChar(200)
+  slug             String    @unique @db.VarChar(200)
+  sku              String?   @unique @db.VarChar(50)
+  shortDescription String?   @map("short_description") @db.VarChar(500)
+  fullDescription  String?   @map("full_description") @db.Text
+  specifications   Json?     // Lưu thông số kỹ thuật dạng JSON
+  basePrice        Decimal   @default(0) @map("base_price") @db.Decimal(12, 2)
+  salePrice        Decimal?  @map("sale_price") @db.Decimal(12, 2)
+  costPrice        Decimal?  @map("cost_price") @db.Decimal(12, 2)
+  thumbnail        String?   @db.VarChar(255)
+  weight           Decimal?  @db.Decimal(8, 2) // Cân nặng (kg)
+  dimensions       Json?     // Kích thước dạng JSON {length, width, height}
+  warranty         Int?      @default(12) // Bảo hành (tháng)
+  categoryId       Int?      @map("category_id")
+  brandId          Int?      @map("brand_id")
+  totalStock       Int       @default(0) @map("total_stock")
+  totalSold        Int       @default(0) @map("total_sold")
+  viewCount        Int       @default(0) @map("view_count")
+  averageRating    Decimal?  @default(0) @map("average_rating") @db.Decimal(3, 2)
+  reviewCount      Int       @default(0) @map("review_count")
+  isActive         Boolean   @default(true) @map("is_active")
+  isFeatured       Boolean   @default(false) @map("is_featured")
+  metaTitle        String?   @map("meta_title") @db.VarChar(200)
+  metaDescription  String?   @map("meta_description") @db.VarChar(500)
+  createdAt        DateTime  @default(now()) @map("created_at")
+  updatedAt        DateTime  @updatedAt @map("updated_at")
 
   // Relations
-  category     Category?      @relation(fields: [categoryId], references: [id], onUpdate: Cascade, onDelete: SetNull)
-  images       ProductImage[]
-  cartItems    CartItem[]
-  orderItems   OrderItem[]
+  category      Category?       @relation(fields: [categoryId], references: [id], onUpdate: Cascade, onDelete: SetNull)
+  brand         Brand?          @relation(fields: [brandId], references: [id], onUpdate: Cascade, onDelete: SetNull)
+  variants      ProductVariant[]
+  images        ProductImage[]
+  cartItems     CartItem[]
+  orderItems    OrderItem[]
+  reviews       Review[]
+  wishlistItems WishlistItem[]
 
   @@map("products")
 }
 
+// Product variants - Biến thể sản phẩm (màu sắc, dung lượng, etc.)
+model ProductVariant {
+  id          Int     @id @default(autoincrement()) @map("variant_id")
+  productId   Int     @map("product_id")
+  sku         String  @unique @db.VarChar(50)
+  name        String  @db.VarChar(100) // VD: "iPhone 15 Pro Max - 256GB - Titan Blue"
+  color       String? @db.VarChar(50)
+  colorHex    String? @map("color_hex") @db.VarChar(7) // Mã màu hex #FFFFFF
+  storage     String? @db.VarChar(50) // Dung lượng: "128GB", "256GB", "1TB"
+  memory      String? @db.VarChar(50) // RAM: "8GB", "16GB"
+  size        String? @db.VarChar(50) // Kích thước: "6.1 inch", "6.7 inch"
+  material    String? @db.VarChar(50) // Chất liệu: "Aluminum", "Titanium"
+  attributes  Json?   // Các thuộc tính khác dạng JSON
+  priceAdjust Decimal @default(0) @map("price_adjust") @db.Decimal(10, 2) // Chênh lệch giá so với base price
+  stock       Int     @default(0)
+  isActive    Boolean @default(true) @map("is_active")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  product    Product    @relation(fields: [productId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  cartItems  CartItem[]
+  orderItems OrderItem[]
+
+  @@map("product_variants")
+}
+
 // Product images table
 model ProductImage {
-  id        Int      @id @default(autoincrement())
+  id        Int      @id @default(autoincrement()) @map("image_id")
   productId Int      @map("product_id")
-  imageUrl  String   @map("image_url")
+  imageUrl  String   @map("image_url") @db.VarChar(255)
+  altText   String?  @map("alt_text") @db.VarChar(200)
+  isPrimary Boolean  @default(false) @map("is_primary")
+  sortOrder Int      @default(0) @map("sort_order")
   createdAt DateTime @default(now()) @map("created_at")
 
   // Relations
@@ -86,36 +163,50 @@ model ProductImage {
   @@map("product_images")
 }
 
-// Banners table
-model Banner {
-  id        Int      @id @default(autoincrement())
-  title     String
-  imageUrl  String?  @map("image_url")
+// Reviews table - Đánh giá sản phẩm
+model Review {
+  id        Int      @id @default(autoincrement()) @map("review_id")
+  productId Int      @map("product_id")
+  userId    Int      @map("user_id")
+  rating    Int      @db.SmallInt // 1-5 sao
+  title     String?  @db.VarChar(200)
+  comment   String?  @db.Text
+  images    Json?    // Hình ảnh đánh giá dạng JSON array
+  isVerified Boolean @default(false) @map("is_verified") // Đã mua hàng
+  isApproved Boolean @default(false) @map("is_approved") // Admin duyệt
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  @@map("banners")
+  // Relations
+  product Product @relation(fields: [productId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+
+  @@unique([productId, userId]) // Mỗi user chỉ đánh giá 1 lần cho 1 sản phẩm
+  @@map("reviews")
 }
 
-// Password requests table
-model PasswordRequest {
-  id          Int                    @id @default(autoincrement())
-  email       String
-  newPassword String                 @map("new_password")
-  username    String
-  status      PasswordRequestStatus  @default(PENDING)
-  createdAt   DateTime               @default(now()) @map("created_at")
+// Wishlist items - Danh sách yêu thích
+model WishlistItem {
+  id        Int      @id @default(autoincrement()) @map("wishlist_id")
+  userId    Int      @map("user_id")
+  productId Int      @map("product_id")
+  createdAt DateTime @default(now()) @map("created_at")
 
-  @@map("password_requests")
+  // Relations
+  user    User    @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+
+  @@unique([userId, productId])
+  @@map("wishlist_items")
 }
 
 // Carts table
 model Cart {
-  id        Int        @id @default(autoincrement())
+  id        Int        @id @default(autoincrement()) @map("cart_id")
   userId    Int        @map("user_id")
+  status    CartStatus @default(ACTIVE)
   createdAt DateTime   @default(now()) @map("created_at")
   updatedAt DateTime   @updatedAt @map("updated_at")
-  status    CartStatus @default(PENDING)
 
   // Relations
   user  User       @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: Cascade)
@@ -124,32 +215,47 @@ model Cart {
   @@map("carts")
 }
 
-// Cart items table
+// Cart items table - Thêm variant support
 model CartItem {
-  id        Int      @id @default(autoincrement())
+  id        Int      @id @default(autoincrement()) @map("cart_item_id")
   cartId    Int      @map("cart_id")
   productId Int      @map("product_id")
+  variantId Int?     @map("variant_id")
   quantity  Int      @default(1)
-  price     Float    @default(0.00)
+  price     Decimal  @default(0) @db.Decimal(12, 2)
   createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
   // Relations
-  cart    Cart    @relation(fields: [cartId], references: [id], onUpdate: Cascade, onDelete: Cascade)
-  product Product @relation(fields: [productId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  cart    Cart            @relation(fields: [cartId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  product Product         @relation(fields: [productId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  variant ProductVariant? @relation(fields: [variantId], references: [id], onUpdate: Cascade, onDelete: SetNull)
 
   @@map("cart_items")
 }
 
-// Orders table
+// Orders table - Cải tiến cho ecommerce
 model Order {
-  id              Int         @id @default(autoincrement())
-  userId          Int         @map("user_id")
-  totalPrice      Float       @default(0.00) @map("total_price")
-  status          OrderStatus @default(PENDING)
-  shippingAddress String?     @map("shipping_address")
-  paymentMethod   String      @default("bank_transfer") @map("payment_method")
-  createdAt       DateTime    @default(now()) @map("created_at")
-  updatedAt       DateTime    @updatedAt @map("updated_at")
+  id                Int           @id @default(autoincrement()) @map("order_id")
+  orderNumber       String        @unique @map("order_number") @db.VarChar(50)
+  userId            Int           @map("user_id")
+  subtotal          Decimal       @default(0) @map("subtotal") @db.Decimal(12, 2)
+  shippingFee       Decimal       @default(0) @map("shipping_fee") @db.Decimal(10, 2)
+  taxAmount         Decimal       @default(0) @map("tax_amount") @db.Decimal(10, 2)
+  discountAmount    Decimal       @default(0) @map("discount_amount") @db.Decimal(10, 2)
+  totalAmount       Decimal       @default(0) @map("total_amount") @db.Decimal(12, 2)
+  status            OrderStatus   @default(PENDING)
+  paymentStatus     PaymentStatus @default(PENDING) @map("payment_status")
+  paymentMethod     String        @default("bank_transfer") @map("payment_method") @db.VarChar(50)
+  shippingAddress   Json?         @map("shipping_address") // Địa chỉ giao hàng dạng JSON
+  billingAddress    Json?         @map("billing_address")  // Địa chỉ thanh toán dạng JSON
+  customerNotes     String?       @map("customer_notes") @db.Text
+  adminNotes        String?       @map("admin_notes") @db.Text
+  shippingTrackingCode String?    @map("shipping_tracking_code") @db.VarChar(100)
+  estimatedDelivery DateTime?     @map("estimated_delivery")
+  deliveredAt       DateTime?     @map("delivered_at")
+  createdAt         DateTime      @default(now()) @map("created_at")
+  updatedAt         DateTime      @updatedAt @map("updated_at")
 
   // Relations
   user  User        @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: Cascade)
@@ -158,19 +264,61 @@ model Order {
   @@map("orders")
 }
 
-// Order items table
+// Order items table - Thêm variant support
 model OrderItem {
-  id        Int   @id @default(autoincrement())
-  orderId   Int   @map("order_id")
-  productId Int   @map("product_id")
-  quantity  Int   @default(1)
-  price     Float @default(0.00)
+  id        Int     @id @default(autoincrement()) @map("order_item_id")
+  orderId   Int     @map("order_id")
+  productId Int     @map("product_id")
+  variantId Int?    @map("variant_id")
+  quantity  Int     @default(1)
+  unitPrice Decimal @default(0) @map("unit_price") @db.Decimal(12, 2)
+  totalPrice Decimal @default(0) @map("total_price") @db.Decimal(12, 2)
+  productSnapshot Json? @map("product_snapshot") // Snapshot thông tin sản phẩm tại thời điểm đặt hàng
 
   // Relations
-  order   Order   @relation(fields: [orderId], references: [id], onUpdate: Cascade, onDelete: Cascade)
-  product Product @relation(fields: [productId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  order   Order           @relation(fields: [orderId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  product Product         @relation(fields: [productId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  variant ProductVariant? @relation(fields: [variantId], references: [id], onUpdate: Cascade, onDelete: SetNull)
 
   @@map("order_items")
+}
+
+// Banners table - Cải tiến cho marketing
+model Banner {
+  id          Int          @id @default(autoincrement()) @map("banner_id")
+  title       String       @db.VarChar(200)
+  subtitle    String?      @db.VarChar(300)
+  description String?      @db.Text
+  imageUrl    String?      @map("image_url") @db.VarChar(255)
+  mobileImageUrl String?   @map("mobile_image_url") @db.VarChar(255)
+  linkUrl     String?      @map("link_url") @db.VarChar(255)
+  buttonText  String?      @map("button_text") @db.VarChar(50)
+  position    BannerPosition @default(HOME_SLIDER)
+  sortOrder   Int          @default(0) @map("sort_order")
+  isActive    Boolean      @default(true) @map("is_active")
+  startDate   DateTime?    @map("start_date")
+  endDate     DateTime?    @map("end_date")
+  createdAt   DateTime     @default(now()) @map("created_at")
+  updatedAt   DateTime     @updatedAt @map("updated_at")
+
+  @@map("banners")
+}
+
+// Password requests table
+model PasswordRequest {
+  id          Int                    @id @default(autoincrement()) @map("request_id")
+  userId      Int                    @map("user_id")
+  email       String                 @db.VarChar(100)
+  token       String                 @unique @db.VarChar(255)
+  expiresAt   DateTime               @map("expires_at")
+  status      PasswordRequestStatus  @default(PENDING)
+  createdAt   DateTime               @default(now()) @map("created_at")
+  usedAt      DateTime?              @map("used_at")
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+
+  @@map("password_requests")
 }
 
 // Enums
@@ -179,6 +327,14 @@ enum Role {
   USER  @map("user")
 
   @@map("role")
+}
+
+enum Gender {
+  MALE   @map("male")
+  FEMALE @map("female")
+  OTHER  @map("other")
+
+  @@map("gender")
 }
 
 enum PasswordRequestStatus {
@@ -190,17 +346,43 @@ enum PasswordRequestStatus {
 }
 
 enum CartStatus {
-  PENDING   @map("pending")
-  COMPLETED @map("completed")
+  ACTIVE    @map("active")
+  ABANDONED @map("abandoned")
+  CONVERTED @map("converted")
 
   @@map("cart_status")
 }
 
 enum OrderStatus {
-  PENDING   @map("pending")
-  DELIVERED @map("delivered")
-  COMPLETED @map("completed")
-  CANCELLED @map("cancelled")
+  PENDING    @map("pending")
+  CONFIRMED  @map("confirmed")
+  PROCESSING @map("processing")
+  SHIPPED    @map("shipped")
+  DELIVERED  @map("delivered")
+  COMPLETED  @map("completed")
+  CANCELLED  @map("cancelled")
+  REFUNDED   @map("refunded")
 
   @@map("order_status")
+}
+
+enum PaymentStatus {
+  PENDING    @map("pending")
+  PROCESSING @map("processing")
+  COMPLETED  @map("completed")
+  FAILED     @map("failed")
+  CANCELLED  @map("cancelled")
+  REFUNDED   @map("refunded")
+
+  @@map("payment_status")
+}
+
+enum BannerPosition {
+  HOME_SLIDER     @map("home_slider")
+  HOME_BANNER     @map("home_banner")
+  CATEGORY_BANNER @map("category_banner")
+  PRODUCT_BANNER  @map("product_banner")
+  SIDEBAR_BANNER  @map("sidebar_banner")
+
+  @@map("banner_position")
 }

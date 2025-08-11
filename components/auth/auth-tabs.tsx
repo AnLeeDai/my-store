@@ -15,7 +15,6 @@ interface AuthTabsProps {
 
 export default function AuthTabs({ defaultTab = "login" }: AuthTabsProps) {
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState("");
   const router = useRouter();
   const searchParams = useSearchParams();
   const toast = useToast();
@@ -24,7 +23,6 @@ export default function AuthTabs({ defaultTab = "login" }: AuthTabsProps) {
   const currentTab = searchParams.get("tab") || defaultTab;
 
   const handleRegisterSuccess = () => {
-    setError("");
     toast.success("Đăng ký thành công! Chào mừng bạn đến với TechStore.");
     setTimeout(() => {
       router.push("/products");
@@ -32,7 +30,6 @@ export default function AuthTabs({ defaultTab = "login" }: AuthTabsProps) {
   };
 
   const handleLoginSuccess = () => {
-    setError("");
     toast.success("Đăng nhập thành công! Chào mừng bạn đến với TechStore.");
     setTimeout(() => {
       router.push("/products");
@@ -40,7 +37,7 @@ export default function AuthTabs({ defaultTab = "login" }: AuthTabsProps) {
   };
 
   const handleError = (errorMessage: string) => {
-    setError(errorMessage);
+    toast.error(errorMessage);
   };
 
   return (

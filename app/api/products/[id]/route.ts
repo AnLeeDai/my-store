@@ -24,9 +24,7 @@ export async function GET(
     }
 
     return NextResponse.json(product);
-  } catch (error) {
-    console.error("Error fetching product:", error);
-
+  } catch {
     return NextResponse.json(
       { error: "Failed to fetch product" },
       { status: 500 },
@@ -47,7 +45,6 @@ export async function PUT(
       thumbnail,
       shortDescription,
       fullDescription,
-      extraInfo,
       inStock,
       brand,
       categoryId,
@@ -57,25 +54,23 @@ export async function PUT(
       where: { id: parseInt(id) },
       data: {
         name,
-        price: price ? parseFloat(price) : undefined,
+        basePrice: price ? parseFloat(price) : undefined,
         thumbnail,
         shortDescription,
         fullDescription,
-        extraInfo,
-        inStock: inStock ? parseInt(inStock) : undefined,
-        brand,
+        totalStock: inStock ? parseInt(inStock) : undefined,
+        brandId: brand ? parseInt(brand) : undefined,
         categoryId: categoryId ? parseInt(categoryId) : null,
       },
       include: {
         category: true,
+        brand: true,
         images: true,
       },
     });
 
     return NextResponse.json(product);
-  } catch (error) {
-    console.error("Error updating product:", error);
-
+  } catch {
     return NextResponse.json(
       { error: "Failed to update product" },
       { status: 500 },
@@ -96,9 +91,7 @@ export async function DELETE(
     });
 
     return NextResponse.json({ message: "Product deleted successfully" });
-  } catch (error) {
-    console.error("Error deleting product:", error);
-
+  } catch {
     return NextResponse.json(
       { error: "Failed to delete product" },
       { status: 500 },

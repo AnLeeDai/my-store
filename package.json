@@ -5,7 +5,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
-    "build": "prisma generate && next build",
+    "build": "prisma generate --no-engine && next build",
     "start": "next start",
     "lint": "eslint --fix",
     "db:seed": "tsx prisma/seed.ts",
@@ -76,8 +76,5 @@
     "tailwindcss": "4.1.11",
     "tsx": "^4.20.3",
     "typescript": "5.6.3"
-  },
-  "prisma": {
-    "seed": "tsx prisma/seed.ts"
   }
 }
